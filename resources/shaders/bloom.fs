@@ -1,21 +1,27 @@
 #version 330 core
 out vec4 FragColor;
+
 in vec2 TexCoords;
 
-uniform sampler2D scene;
-uniform sampler2D bloomBlur;
-uniform bool bloom;
-uniform float exposure;
+uniform sampler2D image;
 
-void main()
-{
-    const float gamma = 2.2;
-    vec3 hdrColor = texture(scene, TexCoords).rgb;
-    vec3 bloomColor = texture(bloomBlur, TexCoords).rgb;
-    if(bloom)
-        hdrColor += bloomColor; // additive blending
-    // tone mapping
-    vec3 result = vec3(1.0) - exp(-hdrColor * exposure);
-    result = pow(result, vec3(1.0 / gamma));
+uniform bool horizontal;
+uniform float weight[5] = float[] (0.5, 0.5, 0.8, 0.5, 0.5);
+
+void main() {
+    vec2 tex_offset = 1.0 / textureSize(image, 0);
+    vec3 result = texture(image, TexCoords).rgb * weight[0];
+    if (horizontal) {
+        for (int i = 1; i < 5; ++i) {
+            result += texture(image, TexCoords + vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
+            result += texture(image, TexCoords - vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
+        }
+    } else {
+        for (int i = 1; i < 5; ++i) {
+            result += texture(image, TexCoords + vec2(0.0, tex_offset.y * i)).rgb * weight[i];
+            result += texture(image, TexCoords - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
+        }
+    }
+
     FragColor = vec4(result, 1.0);
 }
