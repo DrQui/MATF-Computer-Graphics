@@ -60,10 +60,12 @@ struct ProgramState {
     bool ImGuiEnabled = false;
     Camera camera;
     bool CameraMouseMovementUpdateEnabled = true;
-    glm::vec3 backpackPosition = glm::vec3(0.0f);
+    glm::vec3 treePosition = glm::vec3(0.0f);
+    glm::vec3 statuePosition = glm::vec3(0.0f);
     glm::vec3 tablePosition = glm::vec3(-3.6f, -0.34f, 0.41f);
-    float backpackScale = 1.0f;
+    float treeScale = 1.0f;
     float tableScale = 0.004f;
+    float statueScale = 0.005f;
     PointLight pointLight;
     ProgramState()
             : camera(glm::vec3(0.0f, 0.0f, 3.0f)) {}
@@ -371,7 +373,7 @@ int main() {
 
     // load textures
     // -------------
-    unsigned int cubeTexture = loadTexture(FileSystem::getPath("resources/textures/marble.jpg").c_str());
+    unsigned int cubeTexture = loadTexture(FileSystem::getPath("resources/textures/box-texture.jpg").c_str());
     unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/floor.jpg").c_str());
     unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/grass.png").c_str());
 
@@ -379,11 +381,25 @@ int main() {
     // --------------------------------
     vector<glm::vec3> vegetation
             {
-                    glm::vec3(-1.5f, 0.0f, -4.85f),
-                    glm::vec3( 1.5f, 0.0f, -4.85f),
-                    glm::vec3( 0.0f, 0.0f, -4.85f),
-                    glm::vec3(-0.3f, 0.0f, -4.85f),
-                    glm::vec3 (0.5f, 0.0f, -4.85f)
+                    glm::vec3(-1.5f, 0.0f, -5.0f),
+                    glm::vec3( 1.5f, 0.0f, -5.0f),
+                    glm::vec3( 0.0f, 0.0f, -5.0f),
+                    glm::vec3(-0.3f, 0.0f, -5.0f),
+                    glm::vec3 (0.5f, 0.0f, -5.0f),
+                    glm::vec3(-3.0f, 0.0f, -5.0f),
+                    glm::vec3(-5.0f, 0.0f, -5.0f),
+                    glm::vec3(-4.5f, 0.0f, -5.0f),
+                    glm::vec3(-4.0f, 0.0f, -5.0f),
+                    glm::vec3(-3.5f, 0.0f, -5.0f),
+                    glm::vec3(-3.0f, 0.0f, -5.0f),
+                    glm::vec3(-2.5f, 0.0f, -5.0f),
+                    glm::vec3(-2.0f, 0.0f, -5.0f),
+                    glm::vec3(-1.0f, 0.0f, -5.0f),
+                    glm::vec3(2.0f, 0.0f, -5.0f),
+                    glm::vec3(2.5f, 0.0f, -5.0f),
+                    glm::vec3(3.0f, 0.0f, -5.0f),
+                    glm::vec3(3.5f, 0.0f, -5.0f),
+                    glm::vec3(4.0f, 0.0f, -5.0f)
             };
 
     // shader configuration
@@ -421,9 +437,9 @@ int main() {
 
     // load models
     // -----------
-    //Model ourModel("resources/objects/backpack/backpack.obj");
-    Model ourModel("resources/objects/Tree/Tree.obj");
-    ourModel.SetShaderTextureNamePrefix("material.");
+    //Model tree("resources/objects/backpack/backpack.obj");
+    Model tree("resources/objects/Tree/Tree.obj");
+    tree.SetShaderTextureNamePrefix("material.");
 
     Model table("resources/objects/table/table.obj");
     table.SetShaderTextureNamePrefix("material.");
@@ -482,14 +498,47 @@ int main() {
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);
 
-        // render the loaded model
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,
-                               programState->backpackPosition); // translate it down so it's at the center of the scene
-        model = glm::translate(model, glm::vec3(-4.0f, -0.5f, -2.5f))     ;
-        model = glm::scale(model, glm::vec3(programState->backpackScale));    // it's a bit too big for our scene, so scale it down
-        ourShader.setMat4("model", model);
-        ourModel.Draw(ourShader);
+        // render the loaded tree model
+        glm::mat4 treeModel = glm::mat4(1.0f);
+        treeModel = glm::translate(treeModel,
+                               programState->treePosition);
+        treeModel = glm::translate(treeModel, glm::vec3(-4.0f, -0.5f, -2.5f))     ;
+        treeModel = glm::scale(treeModel, glm::vec3(programState->treeScale));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", treeModel);
+        tree.Draw(ourShader);
+
+        glm::mat4 treeModel2 = glm::mat4(1.0f);
+        treeModel2 = glm::translate(treeModel2,
+                                   programState->treePosition);
+        treeModel2 = glm::translate(treeModel2, glm::vec3(-2.0f, -0.5f, -2.5f))     ;
+        treeModel2 = glm::scale(treeModel2, glm::vec3(programState->treeScale));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", treeModel2);
+        tree.Draw(ourShader);
+
+        glm::mat4 treeModel3 = glm::mat4(1.0f);
+        treeModel3 = glm::translate(treeModel3,
+                                   programState->treePosition);
+        treeModel3 = glm::translate(treeModel3, glm::vec3(0.0f, -0.5f, -2.5f))     ;
+        treeModel3 = glm::scale(treeModel3, glm::vec3(programState->treeScale));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", treeModel3);
+        tree.Draw(ourShader);
+
+        glm::mat4 treeModel4 = glm::mat4(1.0f);
+        treeModel4 = glm::translate(treeModel4,
+                                   programState->treePosition);
+        treeModel4 = glm::translate(treeModel4, glm::vec3(2.0f, -0.5f, -2.5f))     ;
+        treeModel4 = glm::scale(treeModel4, glm::vec3(programState->treeScale));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", treeModel4);
+        tree.Draw(ourShader);
+
+        glm::mat4 treeModel5 = glm::mat4(1.0f);
+        treeModel5 = glm::translate(treeModel5,
+                                   programState->treePosition);
+        treeModel5 = glm::translate(treeModel5, glm::vec3(4.0f, -0.5f, -2.5f))     ;
+        treeModel5 = glm::scale(treeModel5, glm::vec3(programState->treeScale));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", treeModel5);
+        tree.Draw(ourShader);
+
 
         // render the loaded model
         glm::mat4 tableModel = glm::mat4(1.0f);
@@ -506,7 +555,7 @@ int main() {
         // view/projection transformations
         projection = glm::perspective(glm::radians(programState->camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         view = programState->camera.GetViewMatrix();
-        model = glm::mat4(1.0f);
+        treeModel = glm::mat4(1.0f);
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
         // cubes
@@ -515,31 +564,32 @@ int main() {
         glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
-        model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-        shader.setMat4("model", model);
+        treeModel = glm::translate(treeModel, glm::vec3(-1.0f, 0.0f, -3.5f));
+        shader.setMat4("model", treeModel);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glCullFace(GL_BACK);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-        shader.setMat4("model", model);
+        treeModel = glm::mat4(1.0f);
+        treeModel = glm::translate(treeModel, glm::vec3(1.0f, 0.0f, -3.5f));
+        shader.setMat4("model", treeModel);
         glDrawArrays(GL_TRIANGLES, 0, 36);
+
         //floor
 
         glDisable(GL_CULL_FACE);
         glBindVertexArray(planeVAO);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
-        model = glm::mat4(1.0f);
-        shader.setMat4("model", model);
+        treeModel = glm::mat4(1.0f);
+        shader.setMat4("model", treeModel);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // vegetation
         glBindVertexArray(transparentVAO);
         glBindTexture(GL_TEXTURE_2D, transparentTexture);
         for (unsigned int i = 0; i < vegetation.size(); i++)
         {
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, vegetation[i]);
-            shader.setMat4("model", model);
+            treeModel = glm::mat4(1.0f);
+            treeModel = glm::translate(treeModel, vegetation[i]);
+            shader.setMat4("model", treeModel);
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
 
@@ -670,8 +720,8 @@ void DrawImGui(ProgramState *programState) {
         ImGui::Text("Hello text");
         ImGui::SliderFloat("Float slider", &f, 0.0, 1.0);
         ImGui::ColorEdit3("Background color", (float *) &programState->clearColor);
-        ImGui::DragFloat3("Backpack position", (float*)&programState->backpackPosition);
-        ImGui::DragFloat("Backpack scale", &programState->backpackScale, 0.05, 0.1, 4.0);
+        ImGui::DragFloat3("Backpack position", (float*)&programState->treePosition);
+        ImGui::DragFloat("Backpack scale", &programState->treeScale, 0.05, 0.1, 4.0);
 
         ImGui::DragFloat("pointLight.constant", &programState->pointLight.constant, 0.05, 0.0, 1.0);
         ImGui::DragFloat("pointLight.linear", &programState->pointLight.linear, 0.05, 0.0, 1.0);
