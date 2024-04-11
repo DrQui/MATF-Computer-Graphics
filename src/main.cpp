@@ -478,6 +478,7 @@ int main() {
         glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        glDisable(GL_CULL_FACE);
         // don't forget to enable shader before setting uniforms
         ourShader.use();
         pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
@@ -549,29 +550,30 @@ int main() {
         //tableModel = glm::rotate(tableModel, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         ourShader.setMat4("model", tableModel);
         table.Draw(ourShader);
-
+        glEnable(GL_CULL_FACE);
         // draw objects
         shader.use();
         // view/projection transformations
         projection = glm::perspective(glm::radians(programState->camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         view = programState->camera.GetViewMatrix();
-        treeModel = glm::mat4(1.0f);
+        glm::mat4 model = glm::mat4(1.0f);
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
         // cubes
-        glCullFace(GL_FRONT);
+        glCullFace(GL_FRONT); // hrere when you enter the cube you can see everything normal beacuse of the faceculling
 
         glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
-        treeModel = glm::translate(treeModel, glm::vec3(-1.0f, 0.0f, -3.5f));
-        shader.setMat4("model", treeModel);
+        model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -3.5f));
+        shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        glCullFace(GL_BACK);
-        treeModel = glm::mat4(1.0f);
-        treeModel = glm::translate(treeModel, glm::vec3(1.0f, 0.0f, -3.5f));
-        shader.setMat4("model", treeModel);
+        //glCullFace(GL_FRONT);
+        glDisable(GL_CULL_FACE); // note here when you enter the cube you can see the inside of the cube
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(1.0f, 0.0f, -3.5f));
+        shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         //floor
@@ -579,17 +581,17 @@ int main() {
         glDisable(GL_CULL_FACE);
         glBindVertexArray(planeVAO);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
-        treeModel = glm::mat4(1.0f);
-        shader.setMat4("model", treeModel);
+        model = glm::mat4(1.0f);
+        shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // vegetation
         glBindVertexArray(transparentVAO);
         glBindTexture(GL_TEXTURE_2D, transparentTexture);
         for (unsigned int i = 0; i < vegetation.size(); i++)
         {
-            treeModel = glm::mat4(1.0f);
-            treeModel = glm::translate(treeModel, vegetation[i]);
-            shader.setMat4("model", treeModel);
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, vegetation[i]);
+            shader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
 
@@ -606,6 +608,8 @@ int main() {
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
         glDepthFunc(GL_LESS); // set depth function back to default
+
+        glEnable(GL_CULL_FACE);
 
         if (programState->ImGuiEnabled)
             DrawImGui(programState);
