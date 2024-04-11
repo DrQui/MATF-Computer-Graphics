@@ -30,6 +30,8 @@ unsigned int loadCubemap(vector<std::string> faces);
 
 unsigned int loadTexture(const char *path);
 
+bool blinn = false;
+
 // settings
 const unsigned int SCR_WIDTH = 1080;
 const unsigned int SCR_HEIGHT = 900;
@@ -178,6 +180,8 @@ int main() {
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
 
     Shader shader("resources/shaders/3.1.blending.vs", "resources/shaders/3.1.blending.fs");
+
+    Shader lightShader("resources/shaders/light.vs", "resources/shaders/light.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -377,6 +381,9 @@ int main() {
     unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/floor.jpg").c_str());
     unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/grass.png").c_str());
 
+    unsigned int transparentTextureBirds = loadTexture(FileSystem::getPath("resources/textures/birds.png").c_str());
+
+    unsigned int transparentTextureSun = loadTexture(FileSystem::getPath("resources/textures/sunImage.png").c_str());
     // transparent vegetation locations
     // --------------------------------
     vector<glm::vec3> vegetation
@@ -402,6 +409,13 @@ int main() {
                     glm::vec3(4.0f, 0.0f, -5.0f)
             };
 
+    vector<glm::vec3> birds
+            {
+                    glm::vec3(-10.0f, 20.0f, -50.0f),
+                    glm::vec3(-0.5f, 23.0f, -55.0f),
+                    glm::vec3(-7.5f, 26.0f, -53.0f)
+
+            };
     // shader configuration
     // --------------------
     shader.use();
@@ -444,6 +458,9 @@ int main() {
     Model table("resources/objects/table/table.obj");
     table.SetShaderTextureNamePrefix("material.");
 
+    Model grass("resources/objects/grass/10450_Rectangular_Grass_Patch_v1_iterations-2.obj");
+    grass.SetShaderTextureNamePrefix("material.");
+
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(-4.0f, -0.5, 0.5);
     pointLight.ambient = glm::vec3(5, 5.5, 5);
@@ -451,7 +468,7 @@ int main() {
     pointLight.specular = glm::vec3(1.0, 1.0, 1.0);
 
     pointLight.constant = 10.0f;//1.0f;
-    pointLight.linear = 0.1f;//0.09f;
+    pointLight.linear = 0.5f;//0.09f;
     pointLight.quadratic = 0.032f;
 
 
@@ -479,10 +496,17 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glDisable(GL_CULL_FACE);
+        glm::vec3 pos = glm::vec3(5.8f, 1.0f, 0.0f);
         // don't forget to enable shader before setting uniforms
         ourShader.use();
-        pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
-        //pointLight.position = glm::vec3(4.0 , 4.0f, 4.0);
+        ourShader.setBool("blinn", blinn);
+        pointLight.position = glm::vec3(30.0 * cos(currentFrame), 4.0f, 30.0 * cos(currentFrame));
+        //pointLight.position = glm::vec3(4.0, 4.0f, 4.0);
+        ourShader.setVec3("dirLight.direction", pos);
+        ourShader.setVec3("dirLight.ambient", glm::vec3(0.55f));
+        ourShader.setVec3("dirLight.diffuse", glm::vec3(0.30f));
+        ourShader.setVec3("dirLight.specular", glm::vec3(0.85f));
+        //pointLight.position = glm::vec3(4.0 , 4.0f, 4.0f);
         ourShader.setVec3("pointLight.position", pointLight.position);
         ourShader.setVec3("pointLight.ambient", pointLight.ambient);
         ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
@@ -545,7 +569,7 @@ int main() {
         glm::mat4 tableModel = glm::mat4(1.0f);
         tableModel = glm::translate(tableModel,
                                programState->tablePosition);// translate it down so it's at the center of the scene
-        tableModel = glm::translate(tableModel, glm::vec3(0.0f, 0.3f , 0.0f));
+        tableModel = glm::translate(tableModel, glm::vec3(0.0f, 0.4f , 0.0f));
         tableModel = glm::scale(tableModel, glm::vec3(programState->tableScale)); // it's a bit too big for our scene, so scale it down
         //tableModel = glm::rotate(tableModel, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         ourShader.setMat4("model", tableModel);
@@ -577,14 +601,26 @@ int main() {
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         //floor
-
+        ourShader.use();
         glDisable(GL_CULL_FACE);
         glBindVertexArray(planeVAO);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
         model = glm::mat4(1.0f);
-        shader.setMat4("model", model);
+        ourShader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glm::mat4 grassModel = glm::mat4(1.0f);
+        grassModel = glm::translate(grassModel,
+                                    programState->treePosition);
+        grassModel = glm::translate(grassModel, glm::vec3(0.0f, -0.5f, -0.0f))     ;
+        grassModel = glm::scale(grassModel, glm::vec3(0.01f));// it's a bit too big for our scene, so scale it down
+        grassModel = glm::scale(grassModel, glm::vec3(3.3f, 1.0f, 3.35f ));
+        grassModel = glm::rotate(grassModel, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        ourShader.setMat4("model", grassModel);
+        grass.Draw(ourShader);
+
         // vegetation
+        shader.use();
         glBindVertexArray(transparentVAO);
         glBindTexture(GL_TEXTURE_2D, transparentTexture);
         for (unsigned int i = 0; i < vegetation.size(); i++)
@@ -594,6 +630,26 @@ int main() {
             shader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
+
+        // vegetation
+        glBindVertexArray(transparentVAO);
+        glBindTexture(GL_TEXTURE_2D, transparentTextureBirds);
+        for (unsigned int i = 0; i < birds.size(); i++)
+        {
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, birds[i]);
+            model = glm::scale(model, glm::vec3(10.0f));
+            shader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        }
+
+        glBindVertexArray(transparentVAO);
+        glBindTexture(GL_TEXTURE_2D, transparentTextureBirds);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-90.0f, 50.0f, -100.0f));
+        model = glm::scale(model, glm::vec3(15.0f));
+        shader.setMat4("model", model);
+
 
         // draw skybox as last
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
@@ -756,6 +812,10 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
         } else {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
+    }
+
+    if(key == GLFW_KEY_B && action == GLFW_PRESS) {
+        blinn = !blinn;
     }
 }
 
