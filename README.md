@@ -22,6 +22,14 @@ Empty project with libraries used in class.
 - `H` activate/deactivate HDR
 - `J` activate/deactivate Bloom
 
+---
+
+# Video
+- Without HDR and Bloom : `https://youtu.be/DWY4MDO1sUg`
+- With HDR and Bloom : `https://youtu.be/jkXmYAyDOSM`
+
+---
+
 # Resources 
 
 1. Skybox : `https://www.pngwing.com/en/free-png-dcabk`
