@@ -11,16 +11,16 @@ Empty project with libraries used in class.
 7. ALT+SHIFT+F10 -> project_base -> run
 
 # Camera movement
-- `W` `A` `S` `D`\
+- `W` `A` `S` `D`
 - Moving mouse moves the camera
 - Mouse scroll enlarges the image
 
 ---
 
 # Activate/deactivate:
-`B` activate/deactivate blinn
-`H` activate/deactivate HDR
-`J` activate/deactivate Bloom
+- `B` activate/deactivate blinn
+- `H` activate/deactivate HDR
+- `J` activate/deactivate Bloom
 
 # Resources 
 
