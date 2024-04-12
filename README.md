@@ -12,4 +12,15 @@ Prazan projekat sa pratećim bibliotekama koje koristimo na času.
 
 # Resursi 
 
-1. Skybox `https://www.pngwing.com/en/free-png-dcabk`
+1. Skybox : `https://www.pngwing.com/en/free-png-dcabk`
+
+2. Grass model : `https://free3d.com/3d-model/-rectangular-grass-patch--205749.html`
+
+3. Table model : `https://sketchfab.com/3d-models/table-a28843f21d784fe98cc220ef0d1df478`
+
+4. Tree model : `https://free3d.com/3d-model/tree-74556.html`
+5. box-texture.jpg : `https://www.renderhub.com/syt-studio/box-texture-pbr`
+
+6. grass.png : `https://www.pinterest.com/pin/58969076356075212/`
+
+7. birds.png : `https://www.hiclipart.com/free-transparent-background-png-clipart-iasgu`
