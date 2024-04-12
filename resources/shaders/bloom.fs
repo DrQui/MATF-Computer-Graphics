@@ -6,7 +6,7 @@ in vec2 TexCoords;
 uniform sampler2D image;
 
 uniform bool horizontal;
-uniform float weight[5] = float[] (0.5, 0.5, 0.8, 0.5, 0.5);
+uniform float weight[5] = float[] (0.8, 0.6, 0.8, 0.7, 0.6);
 
 void main() {
     vec2 tex_offset = 1.0 / textureSize(image, 0);

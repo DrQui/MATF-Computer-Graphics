@@ -37,8 +37,6 @@ in vec3 Normal;
 in vec3 FragPos;
 
 uniform PointLight pointLight;
-uniform PointLight pointLight2;
-uniform PointLight pointLight3;
 uniform Material material;
 uniform DirLight dirLight;
 
@@ -100,7 +98,7 @@ void main()
     result += CalcPointLight(pointLight, normal, FragPos, viewDir);
 
     vec4 texColor = texture(material.texture_diffuse1, TexCoords); // Use texture_diffuse1 here
-    if (texColor.a < 0.1)
+    if (texColor.a < 0.3)
         discard;
     FragColor = texColor * vec4(result, 1.0);
 }

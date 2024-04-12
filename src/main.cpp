@@ -42,7 +42,7 @@ bool hdr = true;
 bool hdrKeyPressed = false;
 bool bloom = false;
 bool bloomKeyPressed = false;
-float exposure = 1.0f;
+float exposure = 1.2f;
 
 // camera
 
@@ -75,7 +75,6 @@ struct ProgramState {
     glm::vec3 tablePosition = glm::vec3(-3.6f, -0.34f, 0.41f);
     float treeScale = 1.0f;
     float tableScale = 0.004f;
-    float statueScale = 0.005f;
     PointLight pointLight;
     ProgramState()
             : camera(glm::vec3(0.0f, 0.0f, 3.0f)) {}
@@ -188,8 +187,6 @@ int main() {
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
 
     Shader shader("resources/shaders/3.1.blending.vs", "resources/shaders/3.1.blending.fs");
-
-    Shader lightShader("resources/shaders/light.vs", "resources/shaders/light.fs");
 
     Shader hdrShader("resources/shaders/hdr.vs","resources/shaders/hdr.fs");
     Shader bloomShader("resources/shaders/bloom.vs","resources/shaders/bloom.fs");
@@ -512,7 +509,6 @@ int main() {
 
     // load models
     // -----------
-    //Model tree("resources/objects/backpack/backpack.obj");
     Model tree("resources/objects/Tree/Tree.obj");
     tree.SetShaderTextureNamePrefix("material.");
 
@@ -524,8 +520,8 @@ int main() {
 
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(-4.0f, -0.5, 0.5);
-    pointLight.ambient = glm::vec3(5, 5.5, 5);
-    pointLight.diffuse = glm::vec3(10, 11, 10);
+    pointLight.ambient = glm::vec3(4, 4.5, 5);
+    pointLight.diffuse = glm::vec3(15, 15, 15);
     pointLight.specular = glm::vec3(1.0, 1.0, 1.0);
 
     pointLight.constant = 10.0f;//1.0f;
@@ -659,14 +655,14 @@ int main() {
         glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
-        model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -3.5f));
+        model = glm::translate(model, glm::vec3(-1.0f, 0.1f, -3.5f));
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         //glCullFace(GL_FRONT);
         glDisable(GL_CULL_FACE); // note here when you enter the cube you can see the inside of the cube
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(1.0f, 0.0f, -3.5f));
+        model = glm::translate(model, glm::vec3(1.0f, 0.1f, -3.5f));
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -902,11 +898,12 @@ void DrawImGui(ProgramState *programState) {
     {
         static float f = 0.0f;
         ImGui::Begin("Hello window");
-        ImGui::Text("Hello text");
+        ImGui::Text("Press H for HDR");
+        ImGui::Text("Press J for Bloom");
         ImGui::SliderFloat("Float slider", &f, 0.0, 1.0);
         ImGui::ColorEdit3("Background color", (float *) &programState->clearColor);
-        ImGui::DragFloat3("Backpack position", (float*)&programState->treePosition);
-        ImGui::DragFloat("Backpack scale", &programState->treeScale, 0.05, 0.1, 4.0);
+        ImGui::DragFloat3("Tree position", (float*)&programState->treePosition);
+        ImGui::DragFloat("Tree scale", &programState->treeScale, 0.05, 0.1, 4.0);
 
         ImGui::DragFloat("pointLight.constant", &programState->pointLight.constant, 0.05, 0.0, 1.0);
         ImGui::DragFloat("pointLight.linear", &programState->pointLight.linear, 0.05, 0.0, 1.0);
