@@ -17,7 +17,7 @@ Empty project with libraries used in class.
 
 ---
 
-#Activate/deactivate:
+# Activate/deactivate:
 `B` activate/deactivate blinn
 `H` activate/deactivate HDR
 `J` activate/deactivate Bloom
